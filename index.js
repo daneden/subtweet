@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 import fsp from 'fs-promise'
 import Twit from 'twit'
 
@@ -33,7 +35,15 @@ fsp.readFile(`txt/${randomChoice(files)}.txt`)
     )
   }))
   .then(effects => effects.filter(effect => blacklist.indexOf(effect) === -1))
-  .then(effects => console.log(randomChoice(effects)))
+  .then(effects => randomChoice(effects))
+  .then(choice => {
+    T.post('statuses/update', {
+      status: choice,
+    }, (err, data, response) => {
+      if(!err) console.log(`Tweeted ${choice}`)
+      else console.error(err)
+    })
+  })
 
 function randomChoice(array) {
   return array[Math.floor(Math.random() * array.length)]
