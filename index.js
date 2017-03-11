@@ -3,6 +3,8 @@ require('dotenv').config()
 import fsp from 'fs-promise'
 import Twit from 'twit'
 
+const debug = false
+
 const TWIT_CONFIG = {
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
@@ -13,11 +15,12 @@ const TWIT_CONFIG = {
 
 const T = new Twit(TWIT_CONFIG)
 
-const files = [0, 1, 2]
+const files = [0, 1, 2, 3, 4]
 const blacklist = [
   "RIPLY",
   "PARKER",
   "KANE",
+  "BRETT",
   "ENGLISH SDH",
 ].map(item => `[${item}]`)
 
@@ -27,35 +30,37 @@ const attemptLimit = 2
 function tweetSoundEffect() {
   fsp.readFile(`txt/${randomChoice(files)}.txt`)
     .then(contents => {
-      const effects = contents.toString('utf-8').match(/\[.*?\]/gi)
+      const effects = contents.toString('utf-8').match(/[\[\(].*?[\]\)]/gi)
       return effects
     })
     .then(effects => effects.map(effect => {
       return (
         effect.replace(/<.*?\/?>/, '')
-          .replace(/\[ ?/, '[')
-          .replace(/ ?\]/, ']')
+          .replace(/[\[\(] ?/, '[')
+          .replace(/ ?[\]\)]/, ']')
           .toUpperCase()
       )
     }))
     .then(effects => effects.filter(effect => blacklist.indexOf(effect) === -1))
     .then(effects => randomChoice(effects))
     .then(choice => {
-      T.post('statuses/update', {
-        status: choice,
-      }, (err, data, response) => {
-        if(!err) console.log(`Tweeted ${choice}`)
-        else {
-          attempt++
-          console.error('Error tweeting sound effect:', err)
-          if(attempt <= attemptLimit) {
-            console.log(`Attempt ${attempt} of ${attempLimit}...`)
-            tweetSoundEffect()
-          } else {
-            console.log(`Attempt limit hit; tweeting failed.`)
+      if (!debug) {
+        T.post('statuses/update', {
+          status: choice,
+        }, (err, data, response) => {
+          if(!err) console.log(`Tweeted ${choice}`)
+          else {
+            attempt++
+            console.error('Error tweeting sound effect:', err)
+            if(attempt <= attemptLimit) {
+              console.log(`Attempt ${attempt} of ${attempLimit}...`)
+              tweetSoundEffect()
+            } else {
+              console.log(`Attempt limit hit; tweeting failed.`)
+            }
           }
-        }
-      })
+        })
+      } else console.log(choice)
     })
 }
 
