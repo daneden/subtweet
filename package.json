@@ -1,0 +1,15 @@
+{
+  "name": "subtweet",
+  "version": "1.0.0",
+  "description": "A Twitter bot that tweets randomly selected subtitle [SOUND EFFECTS]",
+  "main": "index.js",
+  "author": "Daniel Eden",
+  "license": "MIT",
+  "dependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-es2015": "^6.22.0",
+    "fs-promise": "^2.0.0",
+    "twit": "^2.2.5"
+  }
+}
