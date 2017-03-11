@@ -29,10 +29,13 @@ const attemptLimit = 2
 
 function tweetSoundEffect() {
   fsp.readFile(`txt/${randomChoice(files)}.txt`)
+    // Find all the [SOUND EFFECTS]
     .then(contents => {
       const effects = contents.toString('utf-8').match(/[\[\(].*?[\]\)]/gi)
       return effects
     })
+
+    // Normalize them
     .then(effects => effects.map(effect => {
       return (
         effect.replace(/<.*?\/?>/, '')
@@ -41,8 +44,18 @@ function tweetSoundEffect() {
           .toUpperCase()
       )
     }))
+
+    // Filter out 'blacklisted' values (such as names in transcripts
+    // which denote dialog changes
     .then(effects => effects.filter(effect => blacklist.indexOf(effect) === -1))
+
+    // Filter out duplicate entries so that all options have an equal chance
+    .then(effects => effects.filter((effect, i, all) => all.indexOf(effect) === i))
+
+    // Pick one random [SOUND EFFECT]
     .then(effects => randomChoice(effects))
+
+    // Finally, tweet or log the [SOUND EFFECT]
     .then(choice => {
       if (!debug) {
         T.post('statuses/update', {
