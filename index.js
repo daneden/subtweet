@@ -17,7 +17,7 @@ const T = new Twit(TWIT_CONFIG)
 
 const files = [0, 1, 2, 3, 4]
 const blacklist = [
-  "RIPLY",
+  "RIPLEY",
   "PARKER",
   "KANE",
   "BRETT",
